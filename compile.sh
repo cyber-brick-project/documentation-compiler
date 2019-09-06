@@ -6,6 +6,13 @@ TEMP_PATH="${SCRIPT_PATH}/temp"
 RESULTS_PATH="${SCRIPT_PATH}/results"
 DOCUMENTS_SCRIPTS_PATH="${SCRIPT_PATH}/documents"
 
+
+###
+# COMMONS #
+###
+
+. "${SCRIPT_PATH}/commons.sh"
+
 ###
 # FUNCTIONS #
 ###
