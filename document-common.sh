@@ -115,6 +115,8 @@ function prepare_compilation_variables {
     fi
 
     touch "$(compilation_variables_file_name)"
+    break_if_error $? "Problem with creating file for custom variables"
+
     compilation_variables >> "$(compilation_variables_file_name)"
 
     popd
