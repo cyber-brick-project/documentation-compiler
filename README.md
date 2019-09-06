@@ -5,3 +5,5 @@ Script for recompiling and publishing all documentations for
 
 Generates PDF files for digital publishing and printing.
 
+To compile run:
+`compile.sh`
