@@ -66,6 +66,21 @@ EOF
 # FUNCTIONS #
 ###
 
+function print_document_details {
+    echo "Document details:"
+    echo
+    echo "  Document respository name: \"$(repository_name)\""
+    echo "  Document respository path: \"$(repository_path)\""
+    echo "  Document branch: \"$(repository_branch)\""
+    echo "  Document source name: \"$(document_file_name)\""
+    echo "  Document destination name: \"$(document_destination_file_name)\""
+    echo "  Compilation variables file name: \"$(compilation_variables_file_name)\""
+    echo "  Compilation variables:"
+    compilation_variables
+
+    print_space
+}
+
 function fire_not_implemented {
     local NOT_IMPLEMENTED_NAME="${FUNCNAME[1]}"
 
@@ -164,18 +179,7 @@ function move_pdf_to_results {
 # EXECUTE #
 ###
 
-echo "Document details:"
-echo
-echo "  Document respository name: \"$(repository_name)\""
-echo "  Document respository path: \"$(repository_path)\""
-echo "  Document branch: \"$(repository_branch)\""
-echo "  Document source name: \"$(document_file_name)\""
-echo "  Document destination name: \"$(document_destination_file_name)\""
-echo "  Compilation variables file name: \"$(compilation_variables_file_name)\""
-echo "  Compilation variables:"
-compilation_variables
-
-print_space
+print_document_details
 
 git_clone
 git_branch_and_submodules
