@@ -35,6 +35,33 @@ function document_destination_file_name {
     fire_not_implemented
 }
 
+function compilation_variables_file_name {
+    fire_not_implemented
+}
+
+function compilation_variables {
+    fire_not_implemented
+}
+
+###
+# HELPERS #
+###
+
+function generate_compilation_variable {
+    local VARIABLE_NAME="${1}"
+    local VARIABLE_VALUE="${2}"
+
+    cat << EOF
+
+\ifdefined${VARIABLE_NAME}
+    \renewcommand{${VARIABLE_NAME}}{${VARIABLE_VALUE}}
+\else
+    \newcommand{${VARIABLE_NAME}}{${VARIABLE_VALUE}}
+\fi
+
+EOF
+}
+
 ###
 # FUNCTIONS #
 ###
@@ -49,7 +76,6 @@ function fire_not_implemented {
 function git_clone {
     echo "Cloning repository \"$(repository_name)\""
     echo
-
     pushd "${TEMP_PATH}"
 
     git clone "$(repository_path)" "$(repository_name)"
@@ -62,8 +88,8 @@ function git_clone {
 function git_branch_and_submodules {
     echo "Change branch to \"$(repository_branch)\""
     echo
-
     pushd "${TEMP_PATH}/$(repository_name)"
+
     git checkout "$(repository_branch)"
     break_if_error $? "Problem with changing branch"
 
@@ -78,6 +104,23 @@ function git_branch_and_submodules {
     print_space
 }
 
+function prepare_compilation_variables {
+    echo "Prepare compilation variables file\"$(compilation_variables_file_name)\""
+    echo
+    pushd "${TEMP_PATH}/$(repository_name)"
+
+    if [ -z "$(compilation_variables_file_name)" ]; then
+        echo "NO VARIABLES FILE! SKIPPING!"
+        return
+    fi
+
+    touch "$(compilation_variables_file_name)"
+    compilation_variables >> "$(compilation_variables_file_name)"
+
+    popd
+    print_space
+}
+
 function compile_pdf_command {
     pdflatex -synctex=1 -interaction=nonstopmode "$(document_file_name)"
     break_if_error $? "Problem with compiling PDF"
@@ -86,7 +129,6 @@ function compile_pdf_command {
 function compile_pdf {
     echo "Compile PDF from \"$(document_file_name)\""
     echo
-
     pushd "${TEMP_PATH}/$(repository_name)"
 
     # Double compilation required by LaTeX
@@ -99,11 +141,10 @@ function compile_pdf {
 function move_pdf_to_results {
     echo "Compile move result to \"$(document_destination_file_name)\""
     echo
-
     pushd "${TEMP_PATH}/$(repository_name)"
 
     mv "$(basename "$(document_file_name)" .tex).pdf" "${RESULTS_PATH}/$(document_destination_file_name)"
-    break_if_error $? "Problem moving PDF"
+    break_if_error $? "Problem with moving PDF"
 
     popd
 }
@@ -128,10 +169,14 @@ echo "  Document respository path: \"$(repository_path)\""
 echo "  Document branch: \"$(repository_branch)\""
 echo "  Document source name: \"$(document_file_name)\""
 echo "  Document destination name: \"$(document_destination_file_name)\""
+echo "  Compilation variables file name: \"$(compilation_variables_file_name)\""
+echo "  Compilation variables:"
+compilation_variables
 
 print_space
 
 git_clone
 git_branch_and_submodules
+prepare_compilation_variables
 compile_pdf
 move_pdf_to_results
