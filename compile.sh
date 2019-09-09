@@ -37,7 +37,7 @@ parameters:
 
 Execution order (parameters order doesn't count):
 - clean
-- runn
+- run
 - push
 
 https://github.com/cyber-brick-project
