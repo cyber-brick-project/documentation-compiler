@@ -89,7 +89,6 @@ function run_all_documents {
 # EXECUTE #
 ###
 
-
 while getopts "crph" optname
 do
     case "$optname" in
