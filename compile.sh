@@ -6,6 +6,11 @@ TEMP_PATH="${SCRIPT_PATH}/temp"
 RESULTS_PATH="${SCRIPT_PATH}/results"
 DOCUMENTS_SCRIPTS_PATH="${SCRIPT_PATH}/documents"
 
+PARAMETERS_EMPTY=true
+PARAMETERS_CLEAN=false
+PARAMETERS_RUN=false
+PARAMETERS_PUSH=false
+
 
 ###
 # COMMONS #
@@ -13,14 +18,34 @@ DOCUMENTS_SCRIPTS_PATH="${SCRIPT_PATH}/documents"
 
 . "${SCRIPT_PATH}/commons.sh"
 
+
 ###
 # FUNCTIONS #
 ###
 
-function print_space {
-    echo
-    echo "------------=========------------"
-    echo
+function print_help {
+    cat << EOF
+compile.sh - Script for recompiling and publishing documentations for Cyber Brick Project
+
+No parameters works as 'compile.sh -c -r'
+
+parameters:
+  -c   - clean TEMP and RESULTS paths
+  -r   - run all documents
+  -p   - push documents to server using SCP
+  -h   - print this help
+
+Execution order (parameters order doesn't count):
+- clean
+- runn
+- push
+
+https://github.com/cyber-brick-project
+By mwilczek.net
+
+EOF
+
+    exit 0
 }
 
 function clear_directory {
@@ -59,11 +84,45 @@ function run_all_documents {
     print_space
 }
 
+
 ###
 # EXECUTE #
 ###
 
-clear_temp
-clear_results
 
-run_all_documents
+while getopts "crph" optname
+do
+    case "$optname" in
+        "c")
+            PARAMETERS_EMPTY=false
+            PARAMETERS_CLEAN=true
+            ;;
+        "r")
+            PARAMETERS_EMPTY=false
+            PARAMETERS_RUN=true
+            ;;
+        "p")
+            PARAMETERS_EMPTY=false
+            PARAMETERS_PUSH=true
+            break_if_error 1 "Pushing not implemented yet!"
+            ;;
+        *)
+            print_help
+            ;;
+    esac
+done
+
+
+if $PARAMETERS_EMPTY; then
+    PARAMETERS_CLEAN=true
+    PARAMETERS_RUN=true
+fi
+
+if $PARAMETERS_CLEAN; then
+    clear_temp
+    clear_results
+fi
+
+if $PARAMETERS_RUN; then
+    run_all_documents
+fi
