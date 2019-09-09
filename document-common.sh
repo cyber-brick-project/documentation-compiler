@@ -148,9 +148,11 @@ function compile_pdf {
     echo
     pushd "${TEMP_PATH}/$(repository_name)"
 
-    # Double compilation required by LaTeX
-    compile_pdf_command
-    compile_pdf_command
+    # Multiple compilation required by LaTeX
+    # After generating code, page numbers must be recalculated
+    for i in {0..2}; do
+        compile_pdf_command
+    done
 
     popd
 }
