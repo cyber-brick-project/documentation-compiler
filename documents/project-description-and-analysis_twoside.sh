@@ -1,11 +1,11 @@
 #!/bin/bash ../document-common.sh
 
 function repository_path {
-    echo "https://github.com/cyber-brick-project/technology-analysis.git"
+    echo "https://github.com/cyber-brick-project/project-description-and-analysis.git"
 }
 
 function repository_name {
-    echo "technology-analysis.git_oneside"
+    echo "project-description-and-analysis.git.twoside"
 }
 
 function repository_branch {
@@ -17,7 +17,7 @@ function document_file_name {
 }
 
 function document_destination_file_name {
-    echo "technology-analysis_oneside.pdf"
+    echo "project-description-and-analysis_twoside.pdf"
 }
 
 function compilation_variables_file_name {
@@ -25,5 +25,5 @@ function compilation_variables_file_name {
 }
 
 function compilation_variables {
-    generate_compilation_variable "\cbpDocumentSides" "oneside"
+    generate_compilation_variable "\cbpDocumentSides" "twoside"
 }

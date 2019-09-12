@@ -5,7 +5,7 @@ function repository_path {
 }
 
 function repository_name {
-    echo "train-emergency-light-driver.git_twoside"
+    echo "train-emergency-light-driver.git.twoside"
 }
 
 function repository_branch {
