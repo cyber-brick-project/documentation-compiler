@@ -72,11 +72,25 @@ function clear_results {
     clear_directory "RESULTS" "${RESULTS_PATH}"
 }
 
+function run_document {
+    local DOCUMENT="${1}"
+
+    print_space
+
+    echo "Compile document:"
+    echo "${DOCUMENT}"
+    echo
+
+    "${SCRIPT_PATH}"/document-common.sh "${DOCUMENT}";
+}
+
 function run_all_documents {
     echo "Compiling all documents"
     echo
 
-    find "${DOCUMENTS_SCRIPTS_PATH}" -iname '*.sh' -type f -print0 | xargs -0 -n 1 -I '{}' "${SCRIPT_PATH}"/document-common.sh "{}";
+    while IFS= read -r -d '' document; do
+        run_document "${document}"
+    done < <(find "${DOCUMENTS_SCRIPTS_PATH}" -iname '*.sh' -type f -print0)
 
     echo
     echo "Compiled"
