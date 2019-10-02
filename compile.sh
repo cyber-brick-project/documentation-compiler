@@ -5,11 +5,13 @@ SCRIPT_PATH="$(cd "$(dirname "$0")" && pwd -P)"
 TEMP_PATH="${SCRIPT_PATH}/temp"
 RESULTS_PATH="${SCRIPT_PATH}/results"
 DOCUMENTS_SCRIPTS_PATH="${SCRIPT_PATH}/documents"
+PUBLISHERS_SCRIPTS_PATH="${SCRIPT_PATH}/publishers"
 
 PARAMETERS_EMPTY=true
 PARAMETERS_CLEAN=false
 PARAMETERS_RUN=false
 PARAMETERS_PUSH=false
+PUBLISHER_NAME=""
 
 
 ###
@@ -30,15 +32,18 @@ compile.sh - Script for recompiling and publishing documentations for Cyber Bric
 No parameters works as 'compile.sh -c -r'
 
 parameters:
-  -c   - clean TEMP and RESULTS paths
-  -r   - run all documents
-  -p   - push documents to server using SCP
-  -h   - print this help
+  -c              - clean TEMP and RESULTS paths
+  -r              - run all documents
+  -p [PUBLISHER]  - push documents to server using [PUBLISHER]
+  -h              - print this help
 
 Execution order (parameters order doesn't count):
 - clean
 - run
 - push
+
+Available Publishers:
+`list_publishers`
 
 https://github.com/cyber-brick-project
 By mwilczek.net
@@ -98,12 +103,35 @@ function run_all_documents {
     print_space
 }
 
+function list_publishers {
+    while IFS= read -r -d '' publisher_name; do
+        echo "$(basename "${publisher_name}" '.sh')"
+    done < <(find "${PUBLISHERS_SCRIPTS_PATH}" -iname '*.sh' -type f -print0)
+}
+
+function check_publisher_exists {
+    local PUBLISHER_NAME="${1}"
+
+    if [ ! -f "${PUBLISHERS_SCRIPTS_PATH}/${PUBLISHER_NAME}.sh" ]; then
+        break_if_error 1 "Publisher \"${PUBLISHER_NAME}\" do not exists"
+    fi
+}
+
+function run_publisher {
+    local PUBLISHER_NAME="${1}"
+
+    print_space
+
+    echo "Running publisher: \"${PUBLISHER_NAME}\""
+    "${SCRIPT_PATH}"/publisher-common.sh "${PUBLISHERS_SCRIPTS_PATH}/${PUBLISHER_NAME}.sh"
+}
+
 
 ###
 # EXECUTE #
 ###
 
-while getopts "crph" optname
+while getopts "crp:h" optname
 do
     case "$optname" in
         "c")
@@ -117,7 +145,9 @@ do
         "p")
             PARAMETERS_EMPTY=false
             PARAMETERS_PUSH=true
-            break_if_error 1 "Pushing not implemented yet!"
+
+            PUBLISHER_NAME="${OPTARG}"
+            check_publisher_exists "${PUBLISHER_NAME}"
             ;;
         *)
             print_help
@@ -138,4 +168,8 @@ fi
 
 if $PARAMETERS_RUN; then
     run_all_documents
+fi
+
+if $PARAMETERS_PUSH; then
+    run_publisher "${PUBLISHER_NAME}"
 fi

@@ -4,7 +4,12 @@
 # Return 0 if succes. Otherwise error code.
 
 function publish_documents {
+    echo ""
+    echo "Current path (pwd):"
     echo "`pwd`"
+    echo ""
+    echo "Content (ls -l):"
+    echo "`ls -l`"
 
     return 1
 }
