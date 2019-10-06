@@ -27,3 +27,10 @@ function break_if_error {
         exit $RESULT_CODE
     fi
 }
+
+function fire_not_implemented {
+    local NOT_IMPLEMENTED_NAME="${FUNCNAME[1]}"
+
+    print_error "Function \"${NOT_IMPLEMENTED_NAME}\" is not implemented"
+    exit 1
+}

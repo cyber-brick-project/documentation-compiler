@@ -66,6 +66,16 @@ EOF
 # FUNCTIONS #
 ###
 
+function check_implementations {
+    repository_path
+    repository_name
+    repository_branch
+    document_file_name
+    document_destination_file_name
+    compilation_variables_file_name
+    compilation_variables
+}
+
 function print_document_details {
     echo "Document details:"
     echo
@@ -79,13 +89,6 @@ function print_document_details {
     compilation_variables
 
     print_space
-}
-
-function fire_not_implemented {
-    local NOT_IMPLEMENTED_NAME="${FUNCNAME[1]}"
-
-    print_error "Function \"${NOT_IMPLEMENTED_NAME}\" is not implemented"
-    exit 1
 }
 
 function git_clone {
@@ -180,6 +183,8 @@ function move_pdf_to_results {
 ###
 # EXECUTE #
 ###
+
+check_implementations
 
 print_document_details
 
