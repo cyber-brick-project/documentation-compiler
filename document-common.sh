@@ -62,6 +62,12 @@ function generate_compilation_variable {
 EOF
 }
 
+function count_in_tex {
+    local WHAT_TO_FIND="${1}"
+    find . -iname '*.tex' | xargs grep -o "${WHAT_TO_FIND}" | wc -l
+}
+
+
 ###
 # FUNCTIONS #
 ###
@@ -141,6 +147,15 @@ function prepare_compilation_variables {
     print_space
 }
 
+function count_required_compilation_passes {
+    local INCLUDE_COUNT=`count_in_tex '\cbpInclude'`
+    local EMPTY_PAGE_IF_ODD_COUNT=`count_in_tex '\cbpEmptyPageIfTwosideOdd'`
+    local EMPTY_PAGE_IF_EVEN_COUNT=`count_in_tex '\cbpEmptyPageIfTwosideEven'`
+    local SUM_ALL="$(($INCLUDE_COUNT+$EMPTY_PAGE_IF_ODD_COUNT+$EMPTY_PAGE_IF_EVEN_COUNT))"
+
+    echo "${SUM_ALL}"
+}
+
 function compile_pdf_command {
     pdflatex -synctex=1 -interaction=nonstopmode "$(document_file_name)"
     break_if_error $? "Problem with compiling PDF"
@@ -152,8 +167,13 @@ function compile_pdf {
     pushd "${TEMP_PATH}/$(repository_name)"
 
     # Multiple compilation required by LaTeX
-    # After generating code, page numbers must be recalculated
-    for i in {0..2}; do
+    # After generating code, page numbers, TOC, empty pages must be recalculated
+    local REQUIRED_PASSES_NUMBER="$(count_required_compilation_passes)"
+    echo "Required compilation passes: ${REQUIRED_PASSES_NUMBER}"
+    for (( i=0; i<$REQUIRED_PASSES_NUMBER; i++ )) do
+        echo
+        echo "PASS NUMBER ${i}"
+        echo
         compile_pdf_command
     done
 
